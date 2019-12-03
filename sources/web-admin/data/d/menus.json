@@ -1,0 +1,28 @@
+{
+  "draw": 1,
+  "page": 0,
+  "size": 10,
+  "count": 3,
+  "data": [
+    {
+      "id": 1,
+      "name": "home",
+      "title": "首页",
+      "enabled": true,
+      "url": "/"
+    },
+    {
+      "id": 102,
+      "name": "system",
+      "title": "系统管理",
+      "enabled": true
+    },
+    {
+      "id": 352,
+      "name": "baidu",
+      "title": "百度调整",
+      "enabled": true
+    }
+  ],
+  "success": true
+}

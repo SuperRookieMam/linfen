@@ -1,0 +1,516 @@
+[
+  {
+    "id": 1,
+    "name": "home",
+    "title": "首页",
+    "type": "COMPONENT",
+    "href": "/"
+  },
+  {
+    "id": 403,
+    "name": "target",
+    "title": "旅游目的地管理",
+    "type": "COMPONENT",
+    "submenus": [
+      {
+        "id": 404,
+        "name": "nymdd",
+        "title": "旅游目的地",
+        "href": "/data/tourismPurposes",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 452,
+        "name": "旅游组织协会",
+        "title": "旅游组织协会",
+        "href": "/data/associations",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 453,
+        "name": "旅游管理部门",
+        "title": "旅游管理部门",
+        "href": "/data/tourismManagementDepartments",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 455,
+        "name": "旅游活动",
+        "title": "旅游活动",
+        "href": "/data/touristActivitys",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 454,
+        "name": "演出会展",
+        "title": "演出会展",
+        "href": "/data/performanceExhibitions",
+        "type": "COMPONENT",
+        "submenus": []
+      }
+    ]
+  },
+  {
+    "id": 405,
+    "name": "旅游产品管理",
+    "title": "旅游产品管理",
+    "type": "COMPONENT",
+    "submenus": [
+      {
+        "id": 406,
+        "name": "旅游线路管理",
+        "title": "旅游线路管理",
+        "href": "/data/touristRoutes",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 407,
+        "name": "旅游商品",
+        "title": "旅游商品",
+        "href": "/data/touristCommodities",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 408,
+        "name": "优惠信息",
+        "title": "优惠信息",
+        "href": "/data/discountInformations",
+        "type": "COMPONENT",
+        "submenus": []
+      }
+    ]
+  },
+  {
+    "id": 454,
+    "name": "公共资源管理",
+    "title": "公共资源管理",
+    "type": "COMPONENT",
+    "submenus": [
+      {
+        "id": 455,
+        "name": "金融网点",
+        "title": "金融网点",
+        "href": "/data/financialNets",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 456,
+        "name": "药店",
+        "title": "药店",
+        "href": "/data/pharmacies",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 457,
+        "name": "医院",
+        "title": "医院",
+        "href": "/data/hospitals",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 458,
+        "name": "消防队",
+        "title": "消防队",
+        "href": "/data/fireBrigades",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 459,
+        "name": "派出所",
+        "title": "派出所",
+        "href": "/data/policeStations",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 460,
+        "name": "旅游厕所",
+        "title": "旅游厕所",
+        "href": "/data/touristToilets",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 461,
+        "name": "旅游咨询中心",
+        "title": "旅游咨询中心",
+        "href": "/data/touristInformationCenters",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 462,
+        "name": "旅游集散中心",
+        "title": "旅游集散中心",
+        "href": "/data/distributionCenters",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 463,
+        "name": "停车场",
+        "title": "停车场",
+        "href": "/data/parkingLots",
+        "type": "COMPONENT",
+        "submenus": []
+      }
+    ]
+  },
+  {
+    "id": 102,
+    "name": "system",
+    "title": "系统管理",
+    "submenus": [
+      {
+        "id": 103,
+        "name": "system-menu",
+        "title": "菜单管理",
+        "href": "/system/menus",
+        "description": "",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 104,
+        "name": "system-users",
+        "title": "用户管理",
+        "href": "/system/users",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 152,
+        "name": "system-roles",
+        "title": "角色管理",
+        "href": "/system/roles",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 153,
+        "name": "system-resources",
+        "title": "资源管理",
+        "href": "/system/resources",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 353,
+        "name": "百度",
+        "title": "百度",
+        "href": "https://www.baidu.com",
+        "type": "HYPERLINK",
+        "submenus": []
+      }
+    ]
+  },
+  {
+    "id": 201,
+    "name": "tourismResource",
+    "title": "旅游资源管理",
+    "submenus": [
+      {
+        "id": 202,
+        "name": "旅游景区",
+        "title": "旅游景区",
+        "href": "/data/touristAttractions",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 203,
+        "name": "乡村旅游",
+        "title": "乡村旅游",
+        "href": "/data/ruralTourisms",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 204,
+        "name": "旅游城镇",
+        "title": "旅游城镇",
+        "href": "/data/tourismTowns",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 205,
+        "name": "特色街道",
+        "title": "特色街道",
+        "href": "/data/qualityStreets",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 206,
+        "name": "特色旅游场所",
+        "title": "特色旅游场所",
+        "href": "/data/characteristicTourisms",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 207,
+        "name": "新兴业态",
+        "title": "新兴业态",
+        "href": "/data/emergingFormats",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 208,
+        "name": "公园步道",
+        "title": "公园步道",
+        "href": "/data/publicTrails",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 209,
+        "name": "科技文化馆",
+        "title": "科技文化馆",
+        "href": "/data/scienceAndTechnologyCultureCenters",
+        "type": "COMPONENT",
+        "submenus": []
+      }
+    ]
+  },
+  {
+    "id": 501,
+    "name": "tirvalEnterprise",
+    "title": "涉旅企业管理",
+    "submenus": [
+      {
+        "id": 502,
+        "name": "旅行社",
+        "title": "旅行社",
+        "href": "/data/travelAgentFields",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 503,
+        "name": "导游服务公司",
+        "title": "导游服务公司",
+        "href": "/data/tourGuideAgencys",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 504,
+        "name": "住宿场所",
+        "title": "住宿场所",
+        "href": "/data/accommodations",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 505,
+        "name": "餐饮场所",
+        "title": "餐饮场所",
+        "href": "/data/diningPlaces",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 506,
+        "name": "购物场所",
+        "title": "购物场所",
+        "href": "/data/shoppingPlaceWords",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 508,
+        "name": "汽车服务公司",
+        "title": "汽车服务公司",
+        "href": "/data/automobileServices",
+        "type": "COMPONENT",
+        "submenus": []
+      }
+    ]
+  },
+  {
+    "id": 601,
+    "name": "referPersonManage",
+    "title": "涉旅人员管理",
+    "submenus": [
+      {
+        "id": 602,
+        "name": "导游",
+        "title": "导游",
+        "href": "/data/tourGuides",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 603,
+        "name": "领队",
+        "title": "领队",
+        "href": "/data/leaderCharacters",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 604,
+        "name": "景区讲解员",
+        "title": "景区讲解员",
+        "href": "/data/touristGuides",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 605,
+        "name": "旅游咨询人员",
+        "title": "旅游咨询人员",
+        "href": "/data/travelConsultants",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 606,
+        "name": "大巴司机",
+        "title": "大巴司机",
+        "href": "/data/busDrivers",
+        "type": "COMPONENT",
+        "submenus": []
+      }
+    ]
+  },
+  {
+    "id": 701,
+    "name": "touristCommunications",
+    "title": "旅游交通管理",
+    "submenus": [
+      {
+        "id": 702,
+        "name": "航空",
+        "title": "航空",
+        "href": "/data/airports",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 703,
+        "name": "铁路",
+        "title": "铁路",
+        "href": "/data/railwayStations",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 704,
+        "name": "公路",
+        "title": "公路",
+        "href": "/data/passengerStations",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 705,
+        "name": "水运",
+        "title": "水运",
+        "href": "/data/wharfs",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 706,
+        "name": "大巴",
+        "title": "大巴",
+        "href": "/data/tourBuses",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 707,
+        "name": "公交",
+        "title": "公交",
+        "href": "/data/busStations",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 708,
+        "name": "轨道交通",
+        "title": "轨道交通",
+        "href": "/data/railTraffics",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 709,
+        "name": "出租车",
+        "title": "出租车",
+        "href": "/data/taxiEnterprises",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 710,
+        "name": "汽车租赁",
+        "title": "汽车租赁",
+        "href": "/data/carRentals",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 711,
+        "name": "自行车租赁",
+        "title": "自行车租赁",
+        "href": "/data/bikeRentals",
+        "type": "COMPONENT",
+        "submenus": []
+      }
+    ]
+  },
+  {
+    "id": 801,
+    "name": "multimediaResource",
+    "title": "多媒体资源",
+    "submenus": [
+      {
+        "id": 802,
+        "name": "视频库",
+        "title": "视频库",
+        "href": "/data/videos",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 803,
+        "name": "音频库",
+        "title": "音频库",
+        "href": "/data/audioDatabases",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 804,
+        "name": "图片库",
+        "title": "图片库",
+        "href": "/data/imageDatabases",
+        "type": "COMPONENT",
+        "submenus": []
+      },
+      {
+        "id": 805,
+        "name": "虚拟素材字段",
+        "title": "虚拟素材字段",
+        "href": "/data/virtualMaterials",
+        "type": "COMPONENT",
+        "submenus": []
+      }
+    ]
+  }
+]

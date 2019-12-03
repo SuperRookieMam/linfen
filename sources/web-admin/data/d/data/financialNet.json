@@ -1,0 +1,21 @@
+{
+  "draw": 1,
+  "page": 0,
+  "size": 10,
+  "count": 1,
+  "data": [
+    {
+      "id": 1,
+      "fullname": "成都银行",
+      "shortName": "成银",
+      "pinYin": "chengduyinghang",
+      "region": "chengdu",
+      "latitude": "123",
+      "longtitude": "222",
+      "zipCode": "652314",
+      "address": "成都市",
+      "description": "323525235"
+    }
+  ],
+  "success": true
+}

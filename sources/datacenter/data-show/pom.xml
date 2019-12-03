@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>datacenter</artifactId>
+		<groupId>com.dm.linfen</groupId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>data-show</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>com.dm</groupId>
+			<artifactId>dm-resource-server-spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+
+		<!-- KPI编程模块依赖 -->
+		<dependency>
+			<groupId>com.dm.kpi</groupId>
+			<artifactId>kpi-core</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<!--公用kpi模块 -->
+		<dependency>
+			<groupId>com.dm.linfen</groupId>
+			<artifactId>data-kpi-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.mysema.maven</groupId>
+				<artifactId>apt-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>mysql@local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<profiles.active>localhost-mysql</profiles.active>
+				<datasource.url>jdbc:mysql://localhost:3306/dm?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;autoReconnect=true&amp;serverTimezone=Asia/Shanghai</datasource.url>
+				<datasource.driver>com.mysql.cj.jdbc.Driver</datasource.driver>
+				<datasource.username>root</datasource.username>
+				<datasource.password>123456</datasource.password>
+				<datasource.platform>org.hibernate.dialect.MySQL55Dialect</datasource.platform>
+				<user.info.url>http://10.10.1.101:8887/users/current</user.info.url>
+			</properties>
+		</profile>
+		<profile>
+			<id>mysql@damei</id>
+			<properties>
+				<datasource.url>jdbc:mysql://192.168.2.127:3306/show_test?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;autoReconnect=true&amp;serverTimezone=Asia/Shanghai</datasource.url>
+				<datasource.driver>com.mysql.cj.jdbc.Driver</datasource.driver>
+				<datasource.username>root</datasource.username>
+				<datasource.password>damei2018</datasource.password>
+				<datasource.platform>org.hibernate.dialect.MySQL55Dialect</datasource.platform>
+				<user.info.url>http://10.10.1.101:8887/users/current</user.info.url>
+			</properties>
+		</profile>
+		<profile>
+			<id>mariadb@zaozhuang</id>
+			<properties>
+				<datasource.url>jdbc:mariadb://218.202.50.99:7088/show?createDatabaseIfNotExist=true</datasource.url>
+				<datasource.driver>org.mariadb.jdbc.Driver</datasource.driver>
+				<datasource.username>damei</datasource.username>
+				<datasource.password>damei2018</datasource.password>
+				<datasource.platform>org.hibernate.dialect.MariaDB103Dialect</datasource.platform>
+				<user.info.url>http://10.10.1.101:8887/users/current</user.info.url>
+			</properties>
+		</profile>
+		<profile>
+			<id>mariadb@local</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<profiles.active>localhost-mariadb</profiles.active>
+				<datasource.url>jdbc:mariadb://localhost:3306/kpi-test?createDatabaseIfNotExist=true</datasource.url>
+				<datasource.driver>org.mariadb.jdbc.Driver</datasource.driver>
+				<datasource.username>lidong</datasource.username>
+				<datasource.password>admin123456!@#</datasource.password>
+				<datasource.platform>org.hibernate.dialect.MariaDB103Dialect</datasource.platform>
+				<user.info.url>http://10.10.1.101:8887/users/current</user.info.url>
+			</properties>
+		</profile>
+	</profiles>
+</project>

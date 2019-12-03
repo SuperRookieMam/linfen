@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "no": "123",
+  "name": "北上广9日游",
+  "type": null,
+  "target": "广州",
+  "targetType": "9日游",
+  "days": 32,
+  "pics": null,
+  "description": "北京上海广州"
+}

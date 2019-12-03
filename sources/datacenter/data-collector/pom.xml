@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.dm.linfen</groupId>
+		<artifactId>datacenter</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>data-collector</artifactId>
+	<description>数据采集程序</description>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.dm</groupId>
+			<artifactId>dm-resource-server-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.dm.linfen</groupId>
+			<artifactId>data-kpi-common</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.11.3</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.mysema.maven</groupId>
+				<artifactId>apt-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>mysql@local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<profiles.active>localhost-mysql</profiles.active>
+				<datasource.url>jdbc:mysql://10.10.1.100:3306/kpiweather?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;autoReconnect=true&amp;serverTimezone=Asia/Shanghai</datasource.url>
+				<datasource.driver>com.mysql.cj.jdbc.Driver</datasource.driver>
+				<datasource.username>root</datasource.username>
+				<datasource.password>Abc.123456</datasource.password>
+				<datasource.platform>org.hibernate.dialect.MySQL55Dialect</datasource.platform>
+				<user.info.url>http://10.10.1.101:8887/users/current</user.info.url>
+			</properties>
+		</profile>
+	</profiles>
+</project>

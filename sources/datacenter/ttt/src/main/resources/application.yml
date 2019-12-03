@@ -1,0 +1,5 @@
+security:
+  oauth2:
+    resource:
+#      user-info-uri: http://10.10.0.101:8887/oauth/users/current 这个地址写错了
+      user-info-uri: http://10.10.0.101:8887/users/current #这个地址是对的

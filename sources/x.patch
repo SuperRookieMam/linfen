@@ -1,0 +1,979 @@
+Index: datacenter/data-manager/src/main/java/com/dm/data/manager/converter/AccommodationConverter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- datacenter/data-manager/src/main/java/com/dm/data/manager/converter/AccommodationConverter.java	(revision 943)
++++ datacenter/data-manager/src/main/java/com/dm/data/manager/converter/AccommodationConverter.java	(date 1564135684036)
+@@ -3,9 +3,12 @@
+ import com.dm.common.converter.AbstractConverter;
+ import com.dm.data.manager.dto.AccommodationDto;
+ import com.dm.data.manager.entity.Accommodation;
++import com.dm.data.manager.entity.ParkingLot;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Component;
+ 
++import java.util.stream.Collectors;
++
+ @Component
+ public class AccommodationConverter extends AbstractConverter<Accommodation, AccommodationDto> {
+ 	@Autowired
+@@ -155,7 +158,7 @@
+ 		model.setCateringFacilitiesAndServices(dto.getCateringFacilitiesAndServices());
+ 		model.setEntertainmentFacilitiesAndServices(dto.getEntertainmentFacilitiesAndServices());
+ 		model.setBusinessFacilitiesAndServices(dto.getBusinessFacilitiesAndServices());
+-
++		model.setParkingLots(dto.getParkingLots().stream().map( ele -> { return parkingLotConverter.copyProperties(new ParkingLot() ,ele); }).collect(Collectors.toList()));
+ 		return model;
+ 	}
+ 
+Index: web-admin/src/module/data-module/component/.common/BaseTable.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web-admin/src/module/data-module/component/.common/BaseTable.js	(revision 943)
++++ web-admin/src/module/data-module/component/.common/BaseTable.js	(date 1564134874983)
+@@ -35,6 +35,12 @@
+ 
+   timeout = null
+ 
++  readonly =true
++
++  dialogVisible = false
++
++  isadd = true
++
+   areaProps = {
+     children: 'children',
+     label: 'name',
+@@ -47,8 +53,10 @@
+   ajax () {
+     this.searchObj.draw = 1
+     return this.gets({url: this.crrentUrl, params: this.searchObj}).then(resoult => {
+-      this.list = resoult.data.data
++        this.list = resoult.data.data
+       return this.list
++    }).catch(err => {
++      return this.list
+     })
+   }
+ 
+@@ -56,6 +64,23 @@
+     this.$router.push({ name: `${this.formRoute}`, params: { id: 'new' } })
+   }
+ 
++  addref () {
++    this.isadd = true
++    this.dialogVisible = true
++    this.data = {}
++  }
++
++  editref (params) {
++    this.isadd = false
++    this.dialogVisible = true
++    this.data = params
++  }
++  saveref () {
++    if (this.isadd) {
++      this.value.push(this.data)
++    }
++    this.dialogVisible = false
++  }
+   edit (params) {
+     this.$router.push({ name: `${this.formRoute}`, params: params })
+   }
+@@ -86,6 +111,9 @@
+   }
+ 
+   getFormData () {
++    if (this.id === 'new') {
++      return this.data
++    }
+     return this.gets({url: `${this.crrentUrl}/${this.id}`}).then(resoult => {
+       this.data = resoult.data
+     })
+@@ -105,5 +133,14 @@
+       this.list = this.ajax()
+       this.loadRegions()
+     }
++    if (this.rid) {
++      return this.gets({url: `${this.crrentUrl}/${this.rid}`}).then(resoult => {
++        if ( resoult.data[this.rpop]) {
++           resoult.data[this.rpop].forEach(ele => {
++            this.value.push(ele)
++          })
++        }
++      })
++    }
+   }
+ }
+Index: web-admin/src/module/data-module/component/travelRelatedEnterpriseManagement/accommodation/Accommodation.vue
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web-admin/src/module/data-module/component/travelRelatedEnterpriseManagement/accommodation/Accommodation.vue	(revision 943)
++++ web-admin/src/module/data-module/component/travelRelatedEnterpriseManagement/accommodation/Accommodation.vue	(date 1564134195814)
+@@ -27,7 +27,7 @@
+           </el-col>
+         </el-row>
+         <el-tabs>
+-          <el-tab-pane label="基本信息">
++          <el-tab-pane label="基本信息" name="base">
+             <el-row>
+               <el-col :span="12">
+                 <el-form-item label="中文全称" prop="chineseFullName">
+@@ -75,26 +75,7 @@
+                   <el-input type="number" v-model="data.latitude" :disabled="readonly" />
+                 </el-form-item>
+               </el-col>
+-              <!--<el-col :span="12">
+-                <el-form-item label="地理位置" prop="geoPosition" >
+-                  <el-input size='mini' v-model="data.geoPosition" :disabled="readonly"/>
+-                </el-form-item>
+-              </el-col>-->
+             </el-row>
+-
+-            <!--<el-row>-->
+-            <!--<el-col :span="12">-->
+-            <!--<el-form-item label="经度" prop="longitude" >-->
+-            <!--<el-input type="number" v-model="data.longitude" :disabled="readonly"/>-->
+-            <!--</el-form-item>-->
+-            <!--</el-col>-->
+-            <!--<el-col :span="12">-->
+-            <!--<el-form-item label="纬度" prop="latitude" >-->
+-            <!--<el-input type="number" v-model="data.latitude" :disabled="readonly"/>-->
+-            <!--</el-form-item>-->
+-            <!--</el-col>-->
+-            <!--</el-row>-->
+-
+             <el-row>
+               <el-col :span="12">
+                 <el-form-item label="地址" prop="address">
+@@ -166,7 +147,7 @@
+             </el-row>
+           </el-tab-pane>
+ 
+-          <el-tab-pane label="房间信息">
++          <el-tab-pane label="房间信息" name="room">
+             <el-row>
+               <el-col :span="12">
+                 <el-form-item label="房间类型" prop="theRoomType">
+@@ -220,7 +201,7 @@
+             </el-row>
+           </el-tab-pane>
+ 
+-          <el-tab-pane label="组织机构信息">
++          <el-tab-pane label="组织机构信息" name="zuzhi">
+             <el-row>
+               <el-col :span="12">
+                 <el-form-item label="成立日期" prop="setUpTheDate">
+@@ -287,7 +268,7 @@
+             </el-row>
+           </el-tab-pane>
+ 
+-          <el-tab-pane label="交通信息">
++          <el-tab-pane label="交通信息" name="traffic">
+             <el-row>
+               <el-col :span="12">
+                 <el-form-item label="交通方式" prop="modeOfTransport">
+@@ -302,7 +283,7 @@
+             </el-row>
+           </el-tab-pane>
+ 
+-          <el-tab-pane label="公共服务信息">
++          <el-tab-pane label="公共服务信息" name="pablic">
+             <el-row>
+               <el-col :span="12">
+                 <el-form-item label="新浪微博" prop="weibo">
+@@ -474,16 +455,17 @@
+             </el-row>
+           </el-tab-pane>
+ 
+-          <el-tab-pane label="停车场" v-if="id!=='new'">
+-            <reference-form :pdata="data"
+-                            refname="Accommodation"
+-                            fieldname="parkingLots"
+-                            route-name="accommodationsParkingLot"
+-                            jump-name="parkingLots"
+-                            :table-mesg="parkingLot" />
++          <el-tab-pane label="停车场" name="parking" v-if="id!=='new'">
++            <!--<reference-form :pdata="data"-->
++            <!--refname="Accommodation"-->
++            <!--fieldname="parkingLots"-->
++            <!--route-name="accommodationsParkingLot"-->
++            <!--jump-name="parkingLots"-->
++            <!--:table-mesg="parkingLot" />-->
++            <parking-lots v-model="data.parkingLots" :rid="id" />
+           </el-tab-pane>
+ 
+-          <el-tab-pane label="多媒体信息">
++          <el-tab-pane label="多媒体信息" name="media">
+             <el-row>
+               <el-col :span="24">
+                 <img-source v-model="data.images" :disabled="readonly" />
+@@ -519,9 +501,9 @@
+   import VirtualMaterial from '../../.common/virtualMaterial'
+   import qrCodeEditor from '../../.common/QrCodeEditor'
+   import * as myrules from '../../../commonjs/rule'
+-  import ReferenceForm from '../../.common/ReferenceForm'
++  // import ReferenceForm from '../../.common/ReferenceForm'
+   import Url from '../../../commonjs/Url'
+-
++  import ParkingLots from './ParkingLots'
+   @Component({
+     components: {
+       ImgSource,
+@@ -529,7 +511,8 @@
+       VideoResource,
+       VirtualMaterial,
+       qrCodeEditor,
+-      ReferenceForm
++     // ReferenceForm
++      ParkingLots
+     }
+   })
+   export default class Accommodation extends Mixins(BaseTable) {
+Index: web-admin/src/module/data-module/component/travelRelatedEnterpriseManagement/accommodation/Index.vue
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web-admin/src/module/data-module/component/travelRelatedEnterpriseManagement/accommodation/Index.vue	(revision 943)
++++ web-admin/src/module/data-module/component/travelRelatedEnterpriseManagement/accommodation/Index.vue	(date 1564131442412)
+@@ -30,7 +30,11 @@
+       <el-table-column label="资源编码" prop="no" sortable="custom" />
+       <el-table-column label="中文全称" prop="chineseFullName" sortable="custom" />
+       <el-table-column label="所属地区">
+-        <template slot-scope="scope">{{ getRegionName(scope.row.regionCode) }}</template>
++        <template slot-scope="scope">
++          <div v-if="scope.row">
++            {{ getRegionName(scope.row.regionCode) }}
++          </div>
++        </template>
+       </el-table-column>
+       <el-table-column label="地址" prop="address" sortable="custom" />
+       <el-table-column label="类型" prop="type" sortable="custom" />
+Index: web-admin/src/module/data-module/component/travelRelatedEnterpriseManagement/accommodation/ParkingLot.vue
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web-admin/src/module/data-module/component/travelRelatedEnterpriseManagement/accommodation/ParkingLot.vue	(date 1564128430023)
++++ web-admin/src/module/data-module/component/travelRelatedEnterpriseManagement/accommodation/ParkingLot.vue	(date 1564128430023)
+@@ -0,0 +1,347 @@
++<!--停车场-->
++<template>
++  <el-container>
++    <el-main>
++      <el-form label-width="100px"
++               :model="data"
++               ref="form"
++               size="mini"
++               :rules="rules">
++        <el-row>
++          <el-col :span="24" style="display: flex;justify-content: flex-end;margin-top: 15px;">
++            <el-button
++              type="primary"
++              @click="edit"
++              size="mini"
++              v-if="readonly">
++              编辑
++            </el-button>
++            <el-button @click="goBack()" size="mini">取消</el-button>
++            <el-button
++              type="primary"
++              @click="save"
++              size="mini"
++              v-if="!readonly">
++              保存
++            </el-button>
++          </el-col>
++        </el-row>
++        <el-tabs>
++          <el-tab-pane label="基本信息">
++            <el-row>
++              <el-col :span="12">
++                <el-form-item label="中文全称" prop="chineseFullName">
++                  <el-input
++                    v-model="data.chineseFullName"
++                    :disabled="readonly"
++                    maxlength="50" />
++                </el-form-item>
++              </el-col>
++              <el-col :span="12">
++                <el-form-item label="中文简称" prop="chineseShortName">
++                  <el-input
++                    v-model="data.chineseShortName"
++                    :disabled="readonly"
++                    maxlength="20" />
++                </el-form-item>
++              </el-col>
++            </el-row>
++
++            <el-row>
++              <el-col :span="12">
++                <el-form-item label="拼音名称" prop="pinyinName">
++                  <el-input
++                    v-model="data.pinyinName"
++                    :disabled="readonly"
++                    maxlength="50" />
++                </el-form-item>
++              </el-col>
++              <el-col :span="12">
++                <el-form-item label="英文名称" prop="englishName">
++                  <el-input
++                    v-model="data.englishName"
++                    :disabled="readonly"
++                    maxlength="100" />
++                </el-form-item>
++              </el-col>
++            </el-row>
++
++            <el-row>
++              <el-col :span="12">
++                <el-form-item label="所属区域" prop="regionCode">
++                  <el-cascader v-model="regionCode"
++                               expand-trigger="hover"
++                               :options="regions"
++                               :props="areaProps"
++                               :disabled="readonly"
++                               change-on-select />
++                </el-form-item>
++              </el-col>
++              <el-col :span="6">
++                <el-form-item label="经度" prop="longitude">
++                  <el-input type="number" v-model="data.longitude" :disabled="readonly" />
++                </el-form-item>
++              </el-col>
++              <el-col :span="6">
++                <el-form-item label="纬度" prop="latitude">
++                  <el-input type="number" v-model="data.latitude" :disabled="readonly" />
++                </el-form-item>
++              </el-col>
++            </el-row>
++
++            <el-row>
++              <el-col :span="12">
++                <el-form-item label="地址" prop="address">
++                  <el-input
++                    v-model="data.address"
++                    :disabled="readonly"
++                    maxlength="200" />
++                </el-form-item>
++              </el-col>
++              <el-col :span="12">
++                <el-form-item label="所属公司" prop="theCompanyOfAffiliation">
++                  <el-input
++                    v-model="data.theCompanyOfAffiliation"
++                    :disabled="readonly"
++                    maxlength="200" />
++                </el-form-item>
++              </el-col>
++            </el-row>
++
++            <el-row>
++              <el-col :span="12">
++                <el-form-item label="关键字" prop="keywords">
++                  <el-input
++                    v-model="data.keywords"
++                    :disabled="readonly"
++                    maxlength="50" />
++                </el-form-item>
++              </el-col>
++              <el-col :span="12">
++                <el-form-item label="服务设施" prop="serviceFacilities">
++                  <el-input
++                    v-model="data.serviceFacilities"
++                    :disabled="readonly"
++                    maxlength="200" />
++                </el-form-item>
++              </el-col>
++            </el-row>
++          </el-tab-pane>
++
++          <el-tab-pane label="多媒体信息">
++            <el-row>
++              <el-col :span="24">
++                <img-source v-model="data.images" :disabled="readonly" />
++              </el-col>
++            </el-row>
++            <el-row>
++              <el-col :span="24">
++                <video-resource v-model="data.videos" :disabled="readonly" />
++              </el-col>
++            </el-row>
++            <el-row>
++              <el-col :span="24">
++                <audio-resource v-model="data.audios" :disabled="readonly" />
++              </el-col>
++            </el-row>
++            <el-row>
++              <el-col :span="24">
++                <virtual-material v-model="data.virtualMaterials" :disabled="readonly" />
++              </el-col>
++            </el-row>
++          </el-tab-pane>
++
++          <el-tab-pane label="停车场">
++            <el-row>
++              <el-col :span="12">
++                <el-form-item label="停车场类型" prop="theParkingLotType">
++                  <!--<el-input size='mini' v-model="data.destinationCategory" :disabled="readonly"/>-->
++                  <el-select v-model="data.theParkingLotType" placeholder="请选择">
++                    <el-option v-for="item in theParkingLotTypes"
++                               :key="item.value"
++                               :label="item.label"
++                               :value="item.value" />
++                  </el-select>
++                </el-form-item>
++              </el-col>
++
++              <el-col :span="12">
++                <el-form-item label="停车场类型" prop="carType">
++                  <!--<el-input size='mini' v-model="data.destinationCategory" :disabled="readonly"/>-->
++                  <el-select v-model="data.carType" placeholder="请选择">
++                    <el-option v-for="item in carTypes"
++                               :key="item.value"
++                               :label="item.label"
++                               :value="item.value" />
++                  </el-select>
++                </el-form-item>
++              </el-col>
++            </el-row>
++
++            <el-row>
++              <el-col :span="12">
++                <el-form-item label="车位数量" prop="numberOfParking">
++                  <el-input
++                    v-model="data.numberOfParking"
++                    :disabled="readonly"
++                    type="number"
++                    maxlength="20" />
++                </el-form-item>
++              </el-col>
++              <el-col :span="12">
++                <el-form-item label="营业时间" prop="businessHours">
++                  <el-input
++                    v-model="data.businessHours"
++                    :disabled="readonly"
++                    maxlength="50" />
++                </el-form-item>
++              </el-col>
++            </el-row>
++
++            <el-row>
++              <el-col :span="12">
++                <el-form-item label="收费标准" prop="chargeStandard">
++                  <el-input
++                    v-model="data.chargeStandard"
++                    :disabled="readonly"
++                    maxlength="200" />
++                </el-form-item>
++              </el-col>
++            </el-row>
++          </el-tab-pane>
++        </el-tabs>
++      </el-form>
++    </el-main>
++  </el-container>
++</template>
++<script>
++  import BaseTable from '../../.common/BaseTable'
++  import { Component, Prop, Mixins } from 'vue-property-decorator'
++  import ImgSource from '../../.common/ImgResource'
++  import AudioResource from '../../.common/audioResource'
++  import VideoResource from '../../.common/videoResource'
++  import VirtualMaterial from '../../.common/virtualMaterial'
++
++  @Component({
++    components: {
++      ImgSource,
++      AudioResource,
++      VideoResource,
++      VirtualMaterial
++    }
++  })
++  export default class ParkingLot extends Mixins(BaseTable) {
++    @Prop({ default: () => 'new' })
++    rid
++
++    formName = 'form'
++
++  //  crrentUrl = Url.trivalEnterprise.accommodations
++
++    theParkingLotTypes = [{
++      value: '室内',
++      label: '室内'
++    }, {
++      value: '室外',
++      label: '室外'
++    }]
++
++    carTypes = [{
++      value: '大车车位',
++      label: '大车车位'
++    }, {
++      value: '中等车位',
++      label: '中等车位'
++    }, {
++      value: '小车车位',
++      label: '小车车位'
++    }]
++
++    data = {}
++
++// 区划下拉选的属性配置
++    areaProps = {
++      children: 'children',
++      label: 'name',
++      value: 'code'
++    }
++
++    readonly = true
++
++    get rules () {
++      return {
++        chineseFullName: [{
++          required: true,
++          message: '中文全称不能为空',
++          trigger: 'blur'
++        }],
++        area: [{
++          required: true,
++          message: '所属区域不能为空',
++          trigger: 'blur'
++        }],
++        longitude: [{
++          required: true,
++          message: '经度不能为空',
++          trigger: 'blur'
++        }],
++        latitude: [{
++          required: true,
++          message: '纬度不能为空',
++          trigger: 'blur'
++        }]
++      }
++    }
++
++    save () {
++      this.$refs['form'].validate(valid => {
++        if (valid) {
++          if (this.id === 'new') {
++            if (this.pid) {
++              this.data.pid = this.pid
++              this.data.refname = this.refname
++              this.data.fieldname = this.fieldname
++              this.data.jumpName = this.jumpName
++              this.saveAndRef(this.data).then(rsp => {
++                this.data = rsp
++              }).then(() => {
++                this.$router.go(-1)
++              })
++            } else {
++              this.saveData(this.data).then(rsp => {
++                this.data = rsp
++              }).then(() => {
++                this.$router.go(-1)
++              })
++            }
++          } else {
++            this.updateData({ id: this.id, data: this.data }).then(() => {
++              this.$router.go(-1)
++            })
++          }
++        } else {
++          this.$message({
++            message: '数据校验没有通过，请检查输入详情',
++            type: 'error'
++          })
++        }
++      })
++    }
++
++    edit () {
++      this.readonly = false
++    }
++
++    goBack () {
++      this.$router.go(-1)
++    }
++
++    created () {
++      if (this.id !== 'new') {
++        this.getData({ id: this.id }).then(data => (this.data = data))
++      } else {
++        this.readonly = false
++      }
++    }
++  }
++</script>
+Index: web-admin/src/module/data-module/component/travelRelatedEnterpriseManagement/accommodation/ParkingLots.vue
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web-admin/src/module/data-module/component/travelRelatedEnterpriseManagement/accommodation/ParkingLots.vue	(date 1564134534663)
++++ web-admin/src/module/data-module/component/travelRelatedEnterpriseManagement/accommodation/ParkingLots.vue	(date 1564134534663)
+@@ -0,0 +1,309 @@
++<!--停车场-->
++<template>
++  <div>
++    <el-form :inline="true"
++             :model="searchObj"
++             class="clear-float">
++      <el-row>
++        <el-col :span="6" class="flex-right">
++          <el-form-item>
++            <el-button type="primary"
++                       size="mini"
++                       @click="addref">
++              新增
++            </el-button>
++          </el-form-item>
++        </el-col>
++      </el-row>
++    </el-form>
++    <ele-data-tables :server-params="searchObj"
++                     :data="value">
++      <el-table-column label="资源编码" prop="no" />
++      <el-table-column label="中文全称" prop="chineseFullName" sortable="custom" />
++      <el-table-column label="所属地区">
++        <template slot-scope="scope">
++          <div v-if="scope.row">
++            {{ getRegionName(scope.row.regionCode) }}
++          </div>
++        </template>
++      </el-table-column>
++      <el-table-column label="地址" prop="address" sortable="custom" />
++      <el-table-column label="营业时间" prop="businessHours" />
++      <el-table-column label="收费标准" prop="chargeStandard" sortable="custom" />
++      <el-table-column label="操作" :min-width="60">
++        <template slot-scope="scope">
++          <el-button type="text" size="mini" @click="editref(scope.row)">编辑</el-button>
++        </template>
++      </el-table-column>
++    </ele-data-tables>
++
++    <el-dialog title="资源上传" v-if="dialogVisible" :visible.sync="dialogVisible">
++      <el-container>
++        <el-main>
++          <el-form label-width="100px"
++                   :model="data"
++                   ref="parkingLot"
++                   size="mini"
++                   :rules="rules">
++            <el-row>
++              <el-col :span="24" style="display: flex;justify-content: flex-end;margin-top: 15px;">
++                <el-button
++                  type="primary"
++                  @click="readonly=false"
++                  size="mini"
++                  v-if="readonly">
++                  编辑
++                </el-button>
++                <el-button @click="goBack()" size="mini">取消</el-button>
++                <el-button
++                  type="primary"
++                  @click="saveref"
++                  size="mini"
++                  v-if="!readonly">
++                  保存
++                </el-button>
++              </el-col>
++            </el-row>
++            <el-tabs>
++              <el-tab-pane label="基本信息">
++                <el-row>
++                  <el-col :span="12">
++                    <el-form-item label="中文全称" prop="chineseFullName">
++                      <el-input
++                        v-model="data.chineseFullName"
++                        :disabled="readonly"
++                        maxlength="50" />
++                    </el-form-item>
++                  </el-col>
++                  <el-col :span="12">
++                    <el-form-item label="中文简称" prop="chineseShortName">
++                      <el-input
++                        v-model="data.chineseShortName"
++                        :disabled="readonly"
++                        maxlength="20" />
++                    </el-form-item>
++                  </el-col>
++                </el-row>
++
++                <el-row>
++                  <el-col :span="12">
++                    <el-form-item label="拼音名称" prop="pinyinName">
++                      <el-input
++                        v-model="data.pinyinName"
++                        :disabled="readonly"
++                        maxlength="50" />
++                    </el-form-item>
++                  </el-col>
++                  <el-col :span="12">
++                    <el-form-item label="英文名称" prop="englishName">
++                      <el-input
++                        v-model="data.englishName"
++                        :disabled="readonly"
++                        maxlength="100" />
++                    </el-form-item>
++                  </el-col>
++                </el-row>
++
++                <el-row>
++                  <el-col :span="12">
++                    <el-form-item label="所属区域" prop="regionCode">
++                      <el-cascader v-model="data.regionCode"
++                                   expand-trigger="hover"
++                                   :options="userRegionTree"
++                                   :props="areaProps"
++                                   :disabled="readonly"
++                                   change-on-select />
++                    </el-form-item>
++                  </el-col>
++                  <el-col :span="6">
++                    <el-form-item label="经度" prop="longitude">
++                      <el-input type="number" v-model="data.longitude" :disabled="readonly" />
++                    </el-form-item>
++                  </el-col>
++                  <el-col :span="6">
++                    <el-form-item label="纬度" prop="latitude">
++                      <el-input type="number" v-model="data.latitude" :disabled="readonly" />
++                    </el-form-item>
++                  </el-col>
++                </el-row>
++
++                <el-row>
++                  <el-col :span="12">
++                    <el-form-item label="地址" prop="address">
++                      <el-input
++                        v-model="data.address"
++                        :disabled="readonly"
++                        maxlength="200" />
++                    </el-form-item>
++                  </el-col>
++                  <el-col :span="12">
++                    <el-form-item label="所属公司" prop="theCompanyOfAffiliation">
++                      <el-input
++                        v-model="data.theCompanyOfAffiliation"
++                        :disabled="readonly"
++                        maxlength="200" />
++                    </el-form-item>
++                  </el-col>
++                </el-row>
++
++                <el-row>
++                  <el-col :span="12">
++                    <el-form-item label="关键字" prop="keywords">
++                      <el-input
++                        v-model="data.keywords"
++                        :disabled="readonly"
++                        maxlength="50" />
++                    </el-form-item>
++                  </el-col>
++                  <el-col :span="12">
++                    <el-form-item label="服务设施" prop="serviceFacilities">
++                      <el-input
++                        v-model="data.serviceFacilities"
++                        :disabled="readonly"
++                        maxlength="200" />
++                    </el-form-item>
++                  </el-col>
++                </el-row>
++              </el-tab-pane>
++
++              <el-tab-pane label="多媒体信息">
++                <el-row>
++                  <el-col :span="24">
++                    <img-source v-model="data.images" :disabled="readonly" />
++                  </el-col>
++                </el-row>
++                <el-row>
++                  <el-col :span="24">
++                    <video-resource v-model="data.videos" :disabled="readonly" />
++                  </el-col>
++                </el-row>
++                <el-row>
++                  <el-col :span="24">
++                    <audio-resource v-model="data.audios" :disabled="readonly" />
++                  </el-col>
++                </el-row>
++                <el-row>
++                  <el-col :span="24">
++                    <virtual-material v-model="data.virtualMaterials" :disabled="readonly" />
++                  </el-col>
++                </el-row>
++              </el-tab-pane>
++
++              <el-tab-pane label="停车场">
++                <el-row>
++                  <el-col :span="12">
++                    <el-form-item label="停车场类型" prop="theParkingLotType">
++                      <!--<el-input size='mini' v-model="data.destinationCategory" :disabled="readonly"/>-->
++                      <el-select v-model="data.theParkingLotType" placeholder="请选择">
++                        <el-option v-for="item in theParkingLotTypes"
++                                   :key="item.value"
++                                   :label="item.label"
++                                   :value="item.value" />
++                      </el-select>
++                    </el-form-item>
++                  </el-col>
++
++                  <el-col :span="12">
++                    <el-form-item label="停车场类型" prop="carType">
++                      <!--<el-input size='mini' v-model="data.destinationCategory" :disabled="readonly"/>-->
++                      <el-select v-model="data.carType" placeholder="请选择">
++                        <el-option v-for="item in carTypes"
++                                   :key="item.value"
++                                   :label="item.label"
++                                   :value="item.value" />
++                      </el-select>
++                    </el-form-item>
++                  </el-col>
++                </el-row>
++
++                <el-row>
++                  <el-col :span="12">
++                    <el-form-item label="车位数量" prop="numberOfParking">
++                      <el-input
++                        v-model="data.numberOfParking"
++                        :disabled="readonly"
++                        type="number"
++                        maxlength="20" />
++                    </el-form-item>
++                  </el-col>
++                  <el-col :span="12">
++                    <el-form-item label="营业时间" prop="businessHours">
++                      <el-input
++                        v-model="data.businessHours"
++                        :disabled="readonly"
++                        maxlength="50" />
++                    </el-form-item>
++                  </el-col>
++                </el-row>
++
++                <el-row>
++                  <el-col :span="12">
++                    <el-form-item label="收费标准" prop="chargeStandard">
++                      <el-input
++                        v-model="data.chargeStandard"
++                        :disabled="readonly"
++                        maxlength="200" />
++                    </el-form-item>
++                  </el-col>
++                </el-row>
++              </el-tab-pane>
++            </el-tabs>
++          </el-form>
++        </el-main>
++      </el-container>
++    </el-dialog>
++  </div>
++</template>
++<script>
++  import { Component, Prop, Mixins } from 'vue-property-decorator'
++  import BaseTable from '../../.common/BaseTable'
++  import EleDataTables from 'element-datatables'
++  import ImgSource from '../../.common/ImgResource'
++  import AudioResource from '../../.common/audioResource'
++  import VideoResource from '../../.common/videoResource'
++  import VirtualMaterial from '../../.common/virtualMaterial'
++  import Url from '../../../commonjs/Url'
++  @Component({
++    components: {
++      EleDataTables,
++      ImgSource,
++      AudioResource,
++      VideoResource,
++      VirtualMaterial
++    }
++  })
++  export default class ParkingLots extends Mixins(BaseTable) {
++    @Prop({type: Array, default: () => []})
++    value
++
++    @Prop({default: () => 'new'})
++    rid
++
++    formRoute ='parkingLot'
++
++    rpop = 'parkingLots'
++
++    crrentUrl = Url.trivalEnterprise.accommodations
++
++    rules = {}
++
++    theParkingLotTypes = [{
++      value: '室内',
++      label: '室内'
++    }, {
++      value: '室外',
++      label: '室外'
++    }]
++
++    carTypes = [{
++      value: '大车车位',
++      label: '大车车位'
++    }, {
++      value: '中等车位',
++      label: '中等车位'
++    }, {
++      value: '小车车位',
++      label: '小车车位'
++    }]
++  }
++</script>
+Index: web-admin/src/module/data-module/route/trivalEnterprise.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- web-admin/src/module/data-module/route/trivalEnterprise.js	(revision 943)
++++ web-admin/src/module/data-module/route/trivalEnterprise.js	(date 1564123593193)
+@@ -3,6 +3,25 @@
+ * 娱乐场所  没有
+ * */
+ export default [{
++  // 住宿场所
++  name: 'accommodations',
++  path: 'accommodations',
++  component: () => import('../component/travelRelatedEnterpriseManagement/accommodation/Index')
++}, {
++  name: 'accommodation',
++  path: 'accommodation/:id',
++  props: true,
++  component: () => import('../component/travelRelatedEnterpriseManagement/accommodation/Accommodation'),
++  children: [{
++    name: 'accommodationsParkinglots',
++    path: 'accommodationsParkinglots',
++    component: () => import('../component/travelRelatedEnterpriseManagement/accommodation/ParkingLots')
++  }, {
++    name: 'accommodationsParkinglot',
++    path: 'accommodationsParkinglot/:rid',
++    component: () => import('../component/travelRelatedEnterpriseManagement/accommodation/ParkingLot')
++  }]
++}, {
+   // 旅行社
+   name: 'travelAgentFields',
+   path: 'travelAgentFields',
+@@ -23,16 +42,6 @@
+   props: true,
+   component: () => import('../component/travelRelatedEnterpriseManagement/tourGuideAgency/TourGuideAgency')
+ }, {
+-  // 住宿场所
+-  name: 'accommodations',
+-  path: 'accommodations',
+-  component: () => import('../component/travelRelatedEnterpriseManagement/accommodation/Index')
+-}, {
+-  name: 'accommodation',
+-  path: 'accommodation/:id',
+-  props: true,
+-  component: () => import('../component/travelRelatedEnterpriseManagement/accommodation/Accommodation')
+-}, {
+   name: 'accommodationsParkingLot',
+   path: 'accommodations/:pid/:refname/:fieldname/:id',
+   props: true,

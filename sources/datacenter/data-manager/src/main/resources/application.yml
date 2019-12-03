@@ -1,0 +1,34 @@
+server:
+  port: 8081
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: '@datasource.url@'
+    username: '@datasource.username@'
+    driver-class-name: '@datasource.driver@'
+    password: '@datasource.password@'
+    hikari:
+      connection-test-query: select 1
+  jpa:
+    show-sql: false ## 查询时是否显示Sql语句，在生成环境禁用
+    generate-ddl: true ## 字符创建表结构
+    database-platform: '@datasource.platform@'
+    hibernate:
+      use-new-id-generator-mappings: true
+      ddl-auto: update ## 自动升级表结构
+  h2:
+    console:
+      enabled: true
+security:
+  oauth2:
+    resource:
+      user-info-uri: '@user.info.url@'
+management:
+  endpoints:
+    enabled-by-default: false
+video:
+  path: F:/nginx-1.17.4/html/video
+  prefix: .m3u8
+  ffmpegPath: /F:/ffmpeg-20191013-4f4334b-win64-static/bin/ffmpeg.exe
+
