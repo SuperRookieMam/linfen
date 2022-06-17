@@ -13,7 +13,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<poi.version>4.0.0</poi.version>
-		<fastjson.version>1.2.15</fastjson.version>
+		<fastjson.version>1.2.83</fastjson.version>
 	</properties>
 	<dependencies>
 		<dependency>
